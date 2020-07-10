@@ -27,6 +27,7 @@ class DRN(nn.Module):
         self.sub_mean = common.MeanShift(opt.rgb_range, rgb_mean, rgb_std)
 
         self.head = conv(opt.n_colors, n_feats, kernel_size)
+        self.head_two = conv(n_feats, n_feats*4, kernel_size)
 
         self.down = [
             common.DownBlock(opt, 2, n_feats * pow(2, p), n_feats * pow(2, p), n_feats * pow(2, p + 1)
@@ -57,8 +58,10 @@ class DRN(nn.Module):
         # The rest upsample blocks
         for p in range(self.phase - 1, 0, -1):
             up.append([
-                common.Upsampler(conv, 2, 2 * n_feats * pow(2, p), act=False),
-                conv(2 * n_feats * pow(2, p), n_feats * pow(2, p - 1), kernel_size=1)
+                # common.Upsampler(conv, 2, 2 * n_feats * pow(2, p), act=False),
+                # conv(2 * n_feats * pow(2, p), n_feats * pow(2, p - 1), kernel_size=1)
+                common.Upsampler(conv, 2, n_feats * pow(2, self.phase), act=False),
+                conv(n_feats * pow(2, self.phase), n_feats * pow(2, self.phase - 1), kernel_size=1)
             ])
 
         self.up_blocks = nn.ModuleList()
@@ -77,33 +80,62 @@ class DRN(nn.Module):
 
         self.add_mean = common.MeanShift(opt.rgb_range, rgb_mean, rgb_std, 1)
 
+
+        self.RCAB_block_1 = common.RCAB(conv, n_feats * pow(2, 2), kernel_size, act=act)
+        self.up_block_1 = [[
+            common.Upsampler(conv, 2, n_feats * pow(2, 2), act=False),
+            conv(n_feats * pow(2, self.phase), n_feats * pow(2, self.phase - 1), kernel_size=1)
+        ]]
+
+        self.RCAB_block_2 = common.RCAB(conv, n_feats * pow(2, 1), kernel_size, act=act)
+        self.up_block_2 = [[
+            common.Upsampler(conv, 2, n_feats * pow(2, 1), act=False),
+            conv(n_feats * pow(2, 1), n_feats * pow(2, 0), kernel_size=1)
+        ]]
+
+        self.head_3 = conv(n_feats * pow(2, 0), 8, kernel_size)
+        self.head_4 = conv(8, opt.n_colors, kernel_size)
+
     def forward(self, x):
-        # upsample x to target sr size
-        x = self.upsample(x)
+        # # upsample x to target sr size
+        # x = self.upsample(x)
 
         # preprocess
         x = self.sub_mean(x)
-        x = self.head(x)
+        x = self.head(x)        # 16
+        x = self.head_two(x)    # 64
 
-        # down phases,
-        copies = []
-        for idx in range(self.phase):
-            copies.append(x)
-            x = self.down[idx](x)
+        x = self.RCAB_block_1(x)
+        x = self.up_block_1(x)
 
-        # up phases
-        sr = self.tail[0](x)
-        sr = self.add_mean(sr)
-        results = [sr]
-        for idx in range(self.phase):
-            # upsample to SR features
-            x = self.up_blocks[idx](x)
-            # concat down features and upsample features
-            x = torch.cat((x, copies[self.phase - idx - 1]), 1)
-            # output sr imgs
-            sr = self.tail[idx + 1](x)
-            sr = self.add_mean(sr)
+        x = self.RCAB_block_2(x)
+        x = self.up_block_2(x)        
 
-            results.append(sr)
+        x = self.head_3(x)
+        x = self.head_4(x)
+        # # down phases,
+        # copies = []
+        # for idx in range(self.phase):
+        #     copies.append(x)
+        #     x = self.down[idx](x)
+        x = self.add_mean(x)
 
-        return results
+        # # up phases
+        # sr = self.tail[0](x)
+        # sr = self.add_mean(sr)
+        # results = [sr]
+        # for idx in range(self.phase):
+        #     # upsample to SR features
+        #     x = self.up_blocks[idx](x)
+
+        #     # # concat down features and upsample features
+        #     # x = torch.cat((x, copies[self.phase - idx - 1]), 1)
+            
+        #     # output sr imgs
+        #     sr = self.tail[idx + 1](x)
+        #     sr = self.add_mean(sr)
+
+        #     results.append(sr)
+
+        # return results
+        return x

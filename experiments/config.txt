@@ -1,0 +1,40 @@
+2020-07-10-02:54:55
+
+n_threads: 6
+cpu: False
+n_GPUs: 3
+seed: 1
+data_dir: data_path
+data_train: DF2K
+data_test: DF2K
+data_range: 1-800/801-810
+scale: [2, 4]
+patch_size: 384
+rgb_range: 255
+n_colors: 3
+no_augment: False
+model: DRN-S
+pre_train: .
+pre_train_dual: .
+n_blocks: 30
+n_feats: 16
+negval: 0.2
+test_every: 1000
+epochs: 1
+batch_size: 2
+self_ensemble: False
+test_only: False
+lr: 0.0001
+eta_min: 1e-07
+beta1: 0.9
+beta2: 0.999
+epsilon: 1e-08
+weight_decay: 0
+loss: 1*L1
+skip_threshold: 1000000.0
+dual_weight: 0.1
+save: experiments
+print_every: 100
+save_results: False
+dual: True
+

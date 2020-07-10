@@ -19,6 +19,7 @@
                 "--model", "DRN-S",
                 "--save", "experiments",
                 "--epochs", "1",
+                "--n_GPUs", "3",
                 
                 // --data_dir ~/srdata --scale 4 --model DRN-S --save ../experiments 
             ],            

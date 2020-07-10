@@ -45,7 +45,7 @@ parser.add_argument('--test_every', type=int, default=1000,
                     help='do test per every N batches')
 parser.add_argument('--epochs', type=int, default=1000,
                     help='number of epochs to train')
-parser.add_argument('--batch_size', type=int, default=32,
+parser.add_argument('--batch_size', type=int, default=2,
                     help='input batch size for training')
 parser.add_argument('--self_ensemble', action='store_true',
                     help='use self-ensemble method for test')
