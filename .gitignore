@@ -1,0 +1,22 @@
+# Windows:
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Python:
+*.so
+*.egg
+*.egg-info
+
+# My configurations:
+__pycache__
+data_path
+pretrained_models
+experiments/results/
+data/__pycache__/
+model/__pycache__/
+*.pyc
+data/__pycache__/__init__.cpython-37.pyc
+data/__pycache__/common.cpython-37.pyc
+data/__pycache__/srdata.cpython-37.pyc
+imgs

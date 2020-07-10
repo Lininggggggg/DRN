@@ -1,0 +1,53 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: 当前文件",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            
+            // 训练参数配置
+            "args":[
+                "--data_dir", "data_path",
+                "--data_test", "DF2K",
+                "--scale", "4",
+                "--model", "DRN-S",
+                "--save", "experiments",
+                "--epochs", "1",
+                
+                // --data_dir ~/srdata --scale 4 --model DRN-S --save ../experiments 
+            ],            
+
+            // // 测试配置，非官方目录
+            // "args": [
+            //     "--save", "experiments",
+            //     "--data_test", "SRData",
+            //     "--data_dir", "./data_path/srdata",
+            //     "--scale", "4",
+            //     "--model", "DRN-S",
+            //     "--pre_train", "./pretrained_models/DRNS4x.pt",
+            //     "--test_only", 
+            //     "--save_results",
+            //     "--n_GPUs", "1",
+            //     "--test_no_with_HR",
+            // ],
+
+            // // 测试配置，官方目录
+            // "args": [
+            //     "--save", "experiments",
+            //     "--data_test", "Set5",
+            //     // "--data_dir", "./data_path/Set5",
+            //     "--scale", "4",
+            //     "--model", "DRN-S",
+            //     "--pre_train", "./pretrained_models/DRNS4x.pt",
+            //     "--test_only", 
+            //     "--save_results"
+            // ],
+        }
+    ]
+}
